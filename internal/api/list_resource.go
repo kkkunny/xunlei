@@ -13,7 +13,7 @@ import (
 type ListResourceRequest struct {
 	PanAuth  string `json:"pan_auth"`
 	PageSize int64  `json:"page_size"`
-	URLs     string `json:"urls"`
+	URL      string `json:"urls"`
 }
 
 type ListResourceResponse struct {
@@ -40,7 +40,7 @@ type ResourceInfo struct {
 	} `json:"dir,omitempty"`
 
 	// 仅文件有
-	FileIndex int64 `json:"file_index,omitempty"`
+	FileIndex *int64 `json:"file_index,omitempty"`
 }
 
 // ListResource 列出磁链内资源

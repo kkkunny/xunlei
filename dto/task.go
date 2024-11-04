@@ -1,11 +1,15 @@
 package dto
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 // TaskPhase 任务状态
 type TaskPhase string
 
 const (
+	TaskPhaseTypeUnknown  TaskPhase = ""
 	TaskPhaseTypePending  TaskPhase = "PHASE_TYPE_PENDING"
 	TaskPhaseTypeRunning  TaskPhase = "PHASE_TYPE_RUNNING"
 	TaskPhaseTypePaused   TaskPhase = "PHASE_TYPE_PAUSED"
@@ -31,6 +35,30 @@ func (phase TaskPhase) Spec() string {
 type TaskType string
 
 const (
+	TaskTypeUserUnknown     TaskType = ""
 	TaskTypeUserDownloadURL TaskType = "user#download-url"
 	TaskTypeUserDownload    TaskType = "user#download"
 )
+
+type TaskInfo struct {
+	ID       string    // 任务ID
+	Type     TaskType  // 任务类型
+	Name     string    // 任务名
+	UserID   string    // 用户ID
+	Phase    TaskPhase // 任务状态
+	Progress int64     // 下载进度百分比
+
+	FileID   string // 文件ID
+	FileName string // 文件名
+	FileSize int64  // 文件大小 单位：byte
+
+	SavePath string // 保存地址
+	Speed    int64  // 下载速度 单位：byte
+	URL      string // 下载链接
+
+	Space string // 所属空间
+
+	Extra       map[string]string
+	CreatedTime time.Time // 创建时间
+	UpdatedTime time.Time // 更新时间
+}

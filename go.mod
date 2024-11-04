@@ -2,7 +2,10 @@ module github.com/kkkunny/xunlei
 
 go 1.23.2
 
-require github.com/imroc/req/v3 v3.48.0
+require (
+	github.com/imroc/req/v3 v3.48.0
+	github.com/samber/lo v1.47.0
+)
 
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect

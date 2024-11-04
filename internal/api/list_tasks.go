@@ -14,21 +14,21 @@ import (
 )
 
 type ListTasksRequest struct {
-	Space   string            `json:"space"`
-	Limit   int64             `json:"limit"`
-	Filters *ListTasksFilters `json:"filters"`
-	PanAuth string            `json:"pan_auth"`
+	Space   string           `json:"space"`
+	Limit   int64            `json:"limit"`
+	Filter  *ListTasksFilter `json:"filters"`
+	PanAuth string           `json:"pan_auth"`
 }
 
-type ListTasksFilters struct {
+type ListTasksFilter struct {
 	AllowPhases []string `json:"phase"`
 	AllowTypes  []string `json:"type"`
 }
 
 type ListTasksResponse struct {
-	HttpStatus int64      `json:"HttpStatus"`
-	Tasks      []TaskInfo `json:"tasks"`
-	ExpiresIn  int64      `json:"expires_in"`
+	HttpStatus int64       `json:"HttpStatus"`
+	Tasks      []*TaskInfo `json:"tasks"`
+	ExpiresIn  int64       `json:"expires_in"`
 }
 
 type TaskInfo struct {
@@ -58,16 +58,16 @@ func ListTasks(ctx context.Context, addr string, req *ListTasksRequest) (*ListTa
 	}
 
 	var filters string
-	if req.Filters != nil {
+	if req.Filter != nil {
 		filterMap := make(map[string]any)
-		if len(req.Filters.AllowPhases) > 0 {
+		if len(req.Filter.AllowPhases) > 0 {
 			filterMap["phase"] = map[string]string{
-				"in": strings.Join(req.Filters.AllowPhases, ","),
+				"in": strings.Join(req.Filter.AllowPhases, ","),
 			}
 		}
-		if len(req.Filters.AllowTypes) > 0 {
+		if len(req.Filter.AllowTypes) > 0 {
 			filterMap["type"] = map[string]string{
-				"in": strings.Join(req.Filters.AllowTypes, ","),
+				"in": strings.Join(req.Filter.AllowTypes, ","),
 			}
 		}
 		filterData, err := json.Marshal(filterMap)

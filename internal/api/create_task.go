@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -24,7 +25,7 @@ type CreateTaskParam struct {
 	FileID         string `json:"file_id,omitempty"`
 	MIMEType       string `json:"mime_type,omitempty"`
 	ParentFolderID string `json:"parent_folder_id,omitempty"`
-	SubFileIndex   int64  `json:"sub_file_index,omitempty,string"`
+	SubFileIndex   string `json:"sub_file_index,omitempty"`
 	Target         string `json:"target"`
 	TotalFileCount int64  `json:"total_file_count,omitempty,string"`
 	URL            string `json:"url"`
@@ -40,6 +41,9 @@ type CreateTaskResponse struct {
 
 // CreateTask 创建任务
 func CreateTask(ctx context.Context, addr string, req *CreateTaskRequest) (*CreateTaskResponse, error) {
+	a, _ := json.MarshalIndent(req, "", "  ")
+	fmt.Println(string(a))
+
 	path, err := url.JoinPath(addr, "webman", "3rdparty", "pan-xunlei-com", "index.cgi", "drive", "v1", "task")
 	if err != nil {
 		return nil, err

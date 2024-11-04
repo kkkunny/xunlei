@@ -12,14 +12,14 @@ import (
 )
 
 type PatchTaskRequest struct {
-	Space     string           `json:"space"`
-	Type      string           `json:"type"`
-	ID        string           `json:"id"`
-	PanAuth   string           `json:"pan_auth"`
-	SetParams *PatchTaskParams `json:"set_params"`
+	Space   string         `json:"space"`
+	Type    string         `json:"type,omitempty"`
+	ID      string         `json:"id"`
+	PanAuth string         `json:"pan_auth"`
+	Param   PatchTaskParam `json:"set_params"`
 }
 
-type PatchTaskParams struct {
+type PatchTaskParam struct {
 	Phase string `json:"phase"`
 }
 
@@ -34,14 +34,11 @@ func PatchTask(ctx context.Context, addr string, req *PatchTaskRequest) (*PatchT
 		return nil, err
 	}
 
-	var setParams string
-	if req.SetParams != nil {
-		setParamData, err := json.Marshal(req.SetParams)
-		if err != nil {
-			return nil, err
-		}
-		setParams = string(setParamData)
+	setParamData, err := json.Marshal(req.Param)
+	if err != nil {
+		return nil, err
 	}
+	setParams := string(setParamData)
 
 	var bizResp PatchTaskResponse
 	resp, err := request.C().SetTimeout(time.Second*5).R().SetContext(ctx).

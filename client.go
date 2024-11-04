@@ -1,11 +1,24 @@
-package main
+package xunlei
+
+import "fmt"
 
 type Client struct {
-	addr string
+	addr     string
+	deviceID string
+	panAuth  string
 }
 
-func NewClient(addr string) *Client {
+func NewClient(addr string, did string) *Client {
 	return &Client{
-		addr: addr,
+		addr:     addr,
+		deviceID: did,
 	}
+}
+
+func (cli *Client) getSpace() string {
+	return fmt.Sprintf("device_id#%s", cli.deviceID)
+}
+
+func (cli *Client) SetAuth(auth string) {
+	cli.panAuth = auth
 }
