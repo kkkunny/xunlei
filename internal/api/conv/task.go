@@ -39,14 +39,8 @@ func ConvTaskPhaseToDTO(phase string) dto.TaskPhase {
 }
 
 func ConvTaskInfoToDTO(task *api.TaskInfo) (*dto.TaskInfo, error) {
-	fileSize, err := strconv.ParseInt(task.FileSize, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-	speed, err := strconv.ParseInt(task.Params["speed"], 10, 64)
-	if err != nil {
-		return nil, err
-	}
+	fileSize, _ := strconv.ParseInt(task.FileSize, 10, 64)
+	speed, _ := strconv.ParseInt(task.Params["speed"], 10, 64)
 
 	extra := make(map[string]string)
 	for k, v := range task.Params {
