@@ -2,7 +2,6 @@ package xunlei
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"slices"
 	"strconv"
@@ -12,19 +11,18 @@ import (
 
 	"github.com/kkkunny/xunlei/dto"
 	"github.com/kkkunny/xunlei/internal/api"
+	"github.com/kkkunny/xunlei/internal/api/conv"
 )
 
 // CreateTask 创建任务
-func (cli *Client) CreateTask(ctx context.Context, name string, url string, subFileFilter ...func(file *dto.FileResource) bool) error {
+func (cli *Client) CreateTask(ctx context.Context, name string, url string, subFileFilter ...func(file *dto.FileResource) bool) (*dto.TaskInfo, error) {
 	resources, err := cli.ListResource(ctx, url)
 	if err != nil {
-		return err
+		return nil, err
 	} else if len(resources) == 0 {
-		return fmt.Errorf("url not found resources")
+		return nil, fmt.Errorf("url not found resources")
 	}
 	resource := resources[0]
-	a, _ := json.MarshalIndent(resource, "", "  ")
-	fmt.Println(string(a))
 
 	if name == "" {
 		name = resource.GetName()
@@ -39,7 +37,7 @@ func (cli *Client) CreateTask(ctx context.Context, name string, url string, subF
 			return subFileFilterFn(file)
 		})
 		if len(files) == 0 {
-			return fmt.Errorf("no file will download")
+			return nil, fmt.Errorf("no file will download")
 		} else {
 			fileIndexes := lo.Map(files, func(file *dto.FileResource, _ int) int64 {
 				return file.FileIndex
@@ -53,7 +51,7 @@ func (cli *Client) CreateTask(ctx context.Context, name string, url string, subF
 		}
 	}
 
-	_, err = api.CreateTask(ctx, cli.addr, &api.CreateTaskRequest{
+	resp, err := api.CreateTask(ctx, cli.addr, &api.CreateTaskRequest{
 		PanAuth:  cli.panAuth,
 		Type:     string(dto.TaskTypeUserDownloadURL),
 		Space:    cli.getSpace(),
@@ -66,5 +64,8 @@ func (cli *Client) CreateTask(ctx context.Context, name string, url string, subF
 			SubFileIndex: subFileIndex,
 		},
 	})
-	return err
+	if err != nil {
+		return nil, err
+	}
+	return conv.ConvTaskInfoToDTO(&resp.Task)
 }

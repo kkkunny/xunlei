@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -41,9 +40,6 @@ type CreateTaskResponse struct {
 
 // CreateTask 创建任务
 func CreateTask(ctx context.Context, addr string, req *CreateTaskRequest) (*CreateTaskResponse, error) {
-	a, _ := json.MarshalIndent(req, "", "  ")
-	fmt.Println(string(a))
-
 	path, err := url.JoinPath(addr, "webman", "3rdparty", "pan-xunlei-com", "index.cgi", "drive", "v1", "task")
 	if err != nil {
 		return nil, err
