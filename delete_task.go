@@ -18,9 +18,13 @@ func (cli *Client) DeleteTask(ctx context.Context, taskID string, withLocalFile 
 		return cli.ModifyTaskPhase(ctx, taskID, dto.TaskPhaseTypeDelete)
 	}
 
-	err := api.DeleteTask(ctx, cli.addr, &api.DeleteTaskRequest{
+	panAuth, err := api.GetPanAuth(ctx, cli.addr)
+	if err != nil {
+		return err
+	}
+	err = api.DeleteTask(ctx, cli.addr, &api.DeleteTaskRequest{
 		Space:   cli.getSpace(),
-		PanAuth: cli.panAuth,
+		PanAuth: panAuth,
 		TaskIDs: []string{taskID},
 	})
 	return err

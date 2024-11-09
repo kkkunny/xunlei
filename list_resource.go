@@ -10,8 +10,12 @@ import (
 
 // ListResource 列出远程资源
 func (cli *Client) ListResource(ctx context.Context, url string) ([]dto.Resource, error) {
+	panAuth, err := api.GetPanAuth(ctx, cli.addr)
+	if err != nil {
+		return nil, err
+	}
 	resp, err := api.ListResource(ctx, cli.addr, &api.ListResourceRequest{
-		PanAuth:  cli.panAuth,
+		PanAuth:  panAuth,
 		PageSize: 1000,
 		URL:      url,
 	})

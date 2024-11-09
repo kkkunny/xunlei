@@ -10,9 +10,13 @@ import (
 // Deprecated: 请使用 ContinueTask、PauseTask、DeleteTask 代替
 // ModifyTaskPhase 修改任务状态
 func (cli *Client) ModifyTaskPhase(ctx context.Context, taskID string, phase dto.TaskPhase) error {
-	_, err := api.PatchTask(ctx, cli.addr, &api.PatchTaskRequest{
+	panAuth, err := api.GetPanAuth(ctx, cli.addr)
+	if err != nil {
+		return err
+	}
+	_, err = api.PatchTask(ctx, cli.addr, &api.PatchTaskRequest{
 		Space:   cli.getSpace(),
-		PanAuth: cli.panAuth,
+		PanAuth: panAuth,
 		ID:      taskID,
 		Param: api.PatchTaskParam{
 			Phase: phase.Spec(),

@@ -12,6 +12,10 @@ import (
 
 // ListTasks 获取任务列表
 func (cli *Client) ListTasks(ctx context.Context, allowPhases ...dto.TaskPhase) ([]*dto.TaskInfo, error) {
+	panAuth, err := api.GetPanAuth(ctx, cli.addr)
+	if err != nil {
+		return nil, err
+	}
 	resp, err := api.ListTasks(ctx, cli.addr, &api.ListTasksRequest{
 		Space: cli.getSpace(),
 		Limit: 1000,
@@ -20,7 +24,7 @@ func (cli *Client) ListTasks(ctx context.Context, allowPhases ...dto.TaskPhase) 
 				return string(phase)
 			}),
 		},
-		PanAuth: cli.panAuth,
+		PanAuth: panAuth,
 	})
 	if err != nil {
 		return nil, err

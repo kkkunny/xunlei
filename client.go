@@ -5,7 +5,6 @@ import "fmt"
 type Client struct {
 	addr     string
 	deviceID string
-	panAuth  string
 }
 
 func NewClient(addr string, did string) *Client {
@@ -17,8 +16,4 @@ func NewClient(addr string, did string) *Client {
 
 func (cli *Client) getSpace() string {
 	return fmt.Sprintf("device_id#%s", cli.deviceID)
-}
-
-func (cli *Client) SetAuth(auth string) {
-	cli.panAuth = auth
 }

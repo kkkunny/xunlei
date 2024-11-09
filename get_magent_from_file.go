@@ -10,8 +10,12 @@ import (
 
 // GetMagentFromFile 从文件中获取磁链
 func (cli *Client) GetMagentFromFile(ctx context.Context, filename string, file io.Reader) (*url.URL, error) {
+	panAuth, err := api.GetPanAuth(ctx, cli.addr)
+	if err != nil {
+		return nil, err
+	}
 	resp, err := api.BitTorrentInfo(ctx, cli.addr, &api.BitTorrentInfoRequest{
-		PanAuth:  cli.panAuth,
+		PanAuth:  panAuth,
 		FileName: filename,
 		File:     file,
 	})

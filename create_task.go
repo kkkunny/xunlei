@@ -51,8 +51,12 @@ func (cli *Client) CreateTask(ctx context.Context, name string, url string, subF
 		}
 	}
 
+	panAuth, err := api.GetPanAuth(ctx, cli.addr)
+	if err != nil {
+		return nil, err
+	}
 	resp, err := api.CreateTask(ctx, cli.addr, &api.CreateTaskRequest{
-		PanAuth:  cli.panAuth,
+		PanAuth:  panAuth,
 		Type:     string(dto.TaskTypeUserDownloadURL),
 		Space:    cli.getSpace(),
 		Name:     name,
