@@ -2,6 +2,7 @@ package xunlei
 
 import (
 	"context"
+	"strings"
 
 	"github.com/kkkunny/xunlei/dto"
 	"github.com/kkkunny/xunlei/internal/api"
@@ -10,14 +11,17 @@ import (
 
 // ListResource 列出远程资源
 func (cli *Client) ListResource(ctx context.Context, url string) ([]dto.Resource, error) {
-	panAuth, err := api.GetPanAuth(ctx, cli.addr)
-	if err != nil {
-		return nil, err
-	}
-	resp, err := api.ListResource(ctx, cli.addr, &api.ListResourceRequest{
-		PanAuth:  panAuth,
-		PageSize: 1000,
-		URL:      url,
+	var resp *api.ListResourceResponse
+	err := cli.requestWithCheckAuth(ctx, func() (err error) {
+		resp, err = api.ListResource(ctx, cli.addr, &api.ListResourceRequest{
+			PanAuth:  cli.panAuth,
+			PageSize: 1000,
+			URL:      url,
+		})
+		if err != nil && strings.Contains(err.Error(), "402 Payment Required") {
+			return errPanAuthExpired
+		}
+		return err
 	})
 	if err != nil {
 		return nil, err

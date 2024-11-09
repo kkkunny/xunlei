@@ -5,6 +5,7 @@ import "fmt"
 type Client struct {
 	addr     string
 	deviceID string
+	panAuth  string
 }
 
 func NewClient(addr string, did string) *Client {

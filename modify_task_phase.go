@@ -2,6 +2,7 @@ package xunlei
 
 import (
 	"context"
+	"strings"
 
 	"github.com/kkkunny/xunlei/dto"
 	"github.com/kkkunny/xunlei/internal/api"
@@ -10,20 +11,18 @@ import (
 // Deprecated: 请使用 ContinueTask、PauseTask、DeleteTask 代替
 // ModifyTaskPhase 修改任务状态
 func (cli *Client) ModifyTaskPhase(ctx context.Context, taskID string, phase dto.TaskPhase) error {
-	panAuth, err := api.GetPanAuth(ctx, cli.addr)
-	if err != nil {
+	return cli.requestWithCheckAuth(ctx, func() error {
+		_, err := api.PatchTask(ctx, cli.addr, &api.PatchTaskRequest{
+			Space:   cli.getSpace(),
+			PanAuth: cli.panAuth,
+			ID:      taskID,
+			Param: api.PatchTaskParam{
+				Phase: phase.Spec(),
+			},
+		})
+		if err != nil && strings.Contains(err.Error(), "402 Payment Required") {
+			return errPanAuthExpired
+		}
 		return err
-	}
-	_, err = api.PatchTask(ctx, cli.addr, &api.PatchTaskRequest{
-		Space:   cli.getSpace(),
-		PanAuth: panAuth,
-		ID:      taskID,
-		Param: api.PatchTaskParam{
-			Phase: phase.Spec(),
-		},
 	})
-	if err != nil {
-		return err
-	}
-	return nil
 }

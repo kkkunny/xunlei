@@ -51,22 +51,25 @@ func (cli *Client) CreateTask(ctx context.Context, name string, url string, subF
 		}
 	}
 
-	panAuth, err := api.GetPanAuth(ctx, cli.addr)
-	if err != nil {
-		return nil, err
-	}
-	resp, err := api.CreateTask(ctx, cli.addr, &api.CreateTaskRequest{
-		PanAuth:  panAuth,
-		Type:     string(dto.TaskTypeUserDownloadURL),
-		Space:    cli.getSpace(),
-		Name:     name,
-		FileName: resource.GetName(),
-		FileSize: resource.GetFileSize(),
-		Param: api.CreateTaskParam{
-			Target:       cli.getSpace(),
-			URL:          url,
-			SubFileIndex: subFileIndex,
-		},
+	var resp *api.CreateTaskResponse
+	err = cli.requestWithCheckAuth(ctx, func() (err error) {
+		resp, err = api.CreateTask(ctx, cli.addr, &api.CreateTaskRequest{
+			PanAuth:  cli.panAuth,
+			Type:     string(dto.TaskTypeUserDownloadURL),
+			Space:    cli.getSpace(),
+			Name:     name,
+			FileName: resource.GetName(),
+			FileSize: resource.GetFileSize(),
+			Param: api.CreateTaskParam{
+				Target:       cli.getSpace(),
+				URL:          url,
+				SubFileIndex: subFileIndex,
+			},
+		})
+		if err != nil && strings.Contains(err.Error(), "402 Payment Required") {
+			return errPanAuthExpired
+		}
+		return err
 	})
 	if err != nil {
 		return nil, err
